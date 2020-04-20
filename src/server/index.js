@@ -4,16 +4,17 @@ import * as Sentry from '@sentry/node';
 
 import configs from '../configs';
 import appInt from './app';
-import database from './database';
+import databaseConnection from './database';
 
 dotenv.config();
 
-(async () => {
-  try {
-    const app = express();
+const app = express();
+app.disable('x-powered-by');
 
+(async app => {
+  try {
     await appInt(app);
-    await database(app.get('env'));
+    await databaseConnection(app.get('env'));
 
     const PORT = configs.port || 6000;
 
@@ -23,4 +24,6 @@ dotenv.config();
   } catch (error) {
     Sentry.captureException(error);
   }
-})();
+})(app);
+
+export default app;

@@ -2,11 +2,7 @@
 {
   "printWidth": 120,
   "proseWrap": "preserve",
-<<<<<<< HEAD
-  "semi": true,
-=======
   "semi": false,
->>>>>>> 5d934d5... Initial commit
   "singleQuote": true,
   "useTabs": false,
   "tabWidth": 2,

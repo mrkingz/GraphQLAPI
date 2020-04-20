@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
-import { isEmail } from 'validator';
+import mongoose from 'mongoose'
+import { isEmail } from 'validator'
 
 const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: [true, 'first name is required'],
+      required: [true, 'First name is required'],
       minlength: [3, 'First name must be at least 3 letters'],
       maxlength: [20, 'First name cannot be more than 20 letters'],
       // trim: true,
@@ -41,6 +41,6 @@ const userSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
-);
+)
 
-export default new mongoose.model('User', userSchema);
+export default new mongoose.model('User', userSchema)

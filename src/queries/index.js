@@ -1,9 +1,9 @@
-import { GraphQLSchema, GraphQLObjectType } from 'graphql';
-import userQuery from './user';
+import { GraphQLObjectType } from 'graphql'
+import { signIn } from './user'
 
 export default new GraphQLObjectType({
   name: 'QueryType',
   fields: () => ({
-    user: userQuery,
+    auth: signIn,
   }),
-});
+})

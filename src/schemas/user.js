@@ -1,5 +1,5 @@
-import { GraphQLID, GraphQLString, GraphQLObjectType } from 'graphql';
-import { GraphQLDateTime } from 'graphql-iso-date';
+import { GraphQLID, GraphQLString, GraphQLObjectType } from 'graphql'
+import { GraphQLDateTime } from 'graphql-iso-date'
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -11,7 +11,15 @@ const UserType = new GraphQLObjectType({
     password: { type: GraphQLString },
     createdAt: { type: GraphQLDateTime },
     updatedAt: { type: GraphQLDateTime },
+    token: { type: GraphQLString },
   }),
-});
+})
 
-export { UserType };
+const Token = new GraphQLObjectType({
+  name: 'AuthToken',
+  fields: () => ({
+    token: { type: GraphQLString },
+  }),
+})
+
+export { UserType, Token }

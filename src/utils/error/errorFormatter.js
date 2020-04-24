@@ -1,12 +1,8 @@
 const errorFormatter = (error, statusCode = 400) => {
-  const err = new Error();
-  if (typeof error === 'string') {
-    err.message = { statusCode, ...error };
-  } else {
-    err.message = { statusCode, ...error };
-  }
+  const err = new Error()
+  // noinspection JSValidateTypes
+  err.message = { statusCode, error }
+  return err
+}
 
-  return err;
-};
-
-export default errorFormatter;
+export default errorFormatter

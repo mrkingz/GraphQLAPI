@@ -1,18 +1,14 @@
-import mongoose from 'mongoose';
-import { isEmail } from 'validator';
+import mongoose from 'mongoose'
+import { isEmail } from 'validator'
 
 const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: [true, 'first name is required'],
+      required: [true, 'First name is required'],
       minlength: [3, 'First name must be at least 3 letters'],
       maxlength: [20, 'First name cannot be more than 20 letters'],
-      // trim: true,
-      validate: {
-        validator: value => !/^[' ']+$/.test(value),
-        message: props => `Wwwww ${props.value}`,
-      },
+      trim: true,
     },
     lastName: {
       type: String,
@@ -39,8 +35,14 @@ const userSchema = new mongoose.Schema(
       minlength: [8, 'Password must be at least 3 letters'],
       trim: true,
     },
+    todos: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Todo',
+      },
+    ],
   },
   { timestamps: true }
-);
+)
 
-export default new mongoose.model('User', userSchema);
+export default new mongoose.model('User', userSchema)

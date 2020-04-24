@@ -1,39 +1,16 @@
-import { GraphQLString, GraphQLNonNull, validate } from 'graphql';
-import { UserType, UserSignUp } from '../schemas/user';
-import User from '../models/user';
-import errorFormatter from '../utils/error/errorFormatter';
-import validator from '../utils/helpers/validator';
-import bcrypt from 'bcryptjs';
-
-const salt = bcrypt.genSaltSync(10);
+import { GraphQLString, GraphQLNonNull } from 'graphql'
+import { UserType } from '../schemas/user'
+import { signUpResolver } from '../resolvers/user'
 
 const createUser = {
   type: new GraphQLNonNull(UserType),
   args: {
-    firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString },
-    email: { type: GraphQLString },
-    password: { type: GraphQLString },
+    firstName: { type: new GraphQLNonNull(GraphQLString) },
+    lastName: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
   },
-  resolve: async (parent, { firstName, lastName, email, password }) => {
-    const result = await User.findOne({ email }, 'email');
-    if (result) {
-      throw errorFormatter({ email: 'Email address has been used' }, 409);
-    } else {
-      const hashedPassword = bcrypt.hashSync(password, salt);
-      const user = await (
-        await validator(new User(), {
-          firstName,
-          lastName,
-          email,
-          password: hashedPassword,
-        })
-      ).save();
+  resolve: signUpResolver,
+}
 
-      delete user._doc.password;
-      return user;
-    }
-  },
-};
-
-export { createUser };
+export { createUser }

@@ -4,12 +4,12 @@ import Todo from '../models/todo'
 import { dateFormatter } from '../utils/helpers/dateFormatter'
 import errorFormatter from '../utils/error/errorFormatter'
 import mongoose from 'mongoose'
-import { validate } from 'graphql'
 
-const createTodoResolver = async (parents, { date, time, details }, context) => {
+export const createTodoResolver = async (parents, { date, time, details }, context) => {
   const user = await checkAuth(context)
 
   const session = await mongoose.startSession()
+  await Todo.createCollection()
   session.startTransaction()
 
   try {
@@ -30,7 +30,7 @@ const createTodoResolver = async (parents, { date, time, details }, context) => 
   }
 }
 
-const markCompletedResolver = async (parent, args, context) => {
+export const markCompletedResolver = async (parent, args, context) => {
   const user = await checkAuth(context)
   const todo = await Todo.findOne({ $and: [{ _id: args.todoId }, { user }] })
   if (todo) {
@@ -45,23 +45,57 @@ const markCompletedResolver = async (parent, args, context) => {
   throw errorFormatter('Todo does not exist', 404)
 }
 
-const updateTodoResolver = async (parent, args, context) => {
+export const updateTodoResolver = async (parent, args, context) => {
   const user = await checkAuth(context)
   let todo = await Todo.findOne({ $and: [{ _id: args.todoId }, { user }] })
 
   if (!todo) {
     throw errorFormatter('Todo does not exist', 404)
-  } else if (todo.completed) {
-    throw errorFormatter('Completed todo cannot be edited', 403)
-  } else {
-    todo.details = args.details
-    await validator(todo, { ...todo._doc }, 'details')
-    await todo.save()
-    todo.time = todo.date
-    todo.user = user
+  }
+  try {
+    if (todo.completed) {
+      throw errorFormatter('Completed todo cannot be edited', 403)
+    } else {
+      todo.details = args.details
+      await validator(todo, { ...todo._doc }, 'details')
+      await todo.save()
+      todo.time = todo.date
+      todo.user = user
 
-    return todo
+      return todo
+    }
+  } catch (error) {
+    throw errorFormatter(`Server error ${error.message}`, 500)
   }
 }
 
-export { createTodoResolver, markCompletedResolver, updateTodoResolver }
+export const getTodosResolver = async (parent, { completed }, context) => {
+  const user = await checkAuth(context)
+  const filter = completed ? { completed } : {} // set filter if completed is defined
+  const todos = await Todo.find({ ...filter, user: user.id }).populate('user')
+  return todos
+}
+
+export const getTodoResolver = async (parent, args, context) => {
+  const user = await checkAuth(context)
+  const todo = await Todo.findOne({ $and: [{ _id: args.todoId }, { user }] })
+
+  if (todo) {
+    todo._doc.time = todo._doc.date
+    return { ...todo._doc, id: todo.id, user }
+  }
+}
+
+export const deleteTodoResolver = async (parent, { todoId }, context) => {
+  const user = await checkAuth(context)
+  const todo = await Todo.findOne({ $and: [{ _id: todoId }, { user }] })
+
+  if (!todo) {
+    throw errorFormatter('Todo does not exist', 404)
+  }
+  try {
+    await Todo.deleteOne({ _id: todoId })
+  } catch (error) {
+    throw errorFormatter(`Server error ${error.message}`, 500)
+  }
+}

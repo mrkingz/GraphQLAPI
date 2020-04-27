@@ -1,6 +1,6 @@
 import { GraphQLObjectType } from 'graphql'
 import { createUser } from './user'
-import { createTodo, markCompleted, updateTodo } from './todo'
+import { createTodo, markCompleted, updateTodo, deleteTodo } from './todo'
 
 export default new GraphQLObjectType({
   name: 'MutationType',
@@ -9,5 +9,6 @@ export default new GraphQLObjectType({
     todo: createTodo,
     complete: markCompleted,
     update: updateTodo,
+    delete: deleteTodo,
   }),
 })

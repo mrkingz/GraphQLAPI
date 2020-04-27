@@ -1,26 +1,19 @@
 import { TodoType } from '../schemas/todo'
-import { GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql'
+import { GraphQLList, GraphQLID, GraphQLNonNull, GraphQLBoolean } from 'graphql'
 import { checkAuth } from '../utils/helpers/auth'
 import Todo from '../models/todo'
+import { getTodosResolver, getTodoResolver } from '../resolvers/todo'
 
 const getTodos = {
   type: new GraphQLList(TodoType),
-  resolve: async (parent, args, context) => {
-    const user = await checkAuth(context)
-    await user.populate('todos').execPopulate()
-    return user.todos
-  },
+  args: { completed: { type: GraphQLBoolean } },
+  resolve: getTodosResolver,
 }
 
 const getTodo = {
   type: TodoType,
   args: { todoId: { type: GraphQLNonNull(GraphQLID) } },
-  resolve: async (parent, args, context) => {
-    const user = await checkAuth(context)
-    const todo = await Todo.findOne({ $and: [{ _id: args.todoId }, { user }] })
-    todo.time = todo._doc.date
-    return { todo, user }
-  },
+  resolve: getTodoResolver,
 }
 
 export { getTodos, getTodo }

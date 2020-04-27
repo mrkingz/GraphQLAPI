@@ -1,9 +1,9 @@
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql'
 import { GraphQLTime, GraphQLDate } from 'graphql-iso-date'
 import { TodoType } from '../schemas/todo'
-import { createTodoResolver, markCompletedResolver, updateTodoResolver } from '../resolvers/todo'
+import { createTodoResolver, markCompletedResolver, updateTodoResolver, deleteTodoResolver } from '../resolvers/todo'
 
-const createTodo = {
+export const createTodo = {
   type: new GraphQLNonNull(TodoType),
   args: {
     details: { type: new GraphQLNonNull(GraphQLString) },
@@ -13,13 +13,13 @@ const createTodo = {
   resolve: createTodoResolver,
 }
 
-const markCompleted = {
+export const markCompleted = {
   type: new GraphQLNonNull(TodoType),
   args: { todoId: { type: new GraphQLNonNull(GraphQLID) } },
   resolve: markCompletedResolver,
 }
 
-const updateTodo = {
+export const updateTodo = {
   type: new GraphQLNonNull(TodoType),
   args: {
     todoId: { type: new GraphQLNonNull(GraphQLID) },
@@ -28,4 +28,8 @@ const updateTodo = {
   resolve: updateTodoResolver,
 }
 
-export { createTodo, markCompleted, updateTodo }
+export const deleteTodo = {
+  type: TodoType,
+  args: { todoId: { type: new GraphQLNonNull(GraphQLID) } },
+  resolve: deleteTodoResolver,
+}
